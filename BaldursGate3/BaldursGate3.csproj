@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>library</OutputType>
+    <!-- <OutputType>exe</OutputType> -->
+    <TargetFramework>net472</TargetFramework>
+    <RootNamespace>BaldursGate3</RootNamespace>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="LSLib">
+      <HintPath>$(SolutionDir)libs\LSLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+</Project>
