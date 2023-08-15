@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using LSLib.LS;
 
@@ -20,9 +17,9 @@ namespace BaldursGate3
 
         // 从 pak 中加载 mod 数据
         // LSLib By: https://github.com/Norbyte/lslib
-        public static async Task<object> LoadModDataFromPakAsync(string pakPath)
+        public async Task<object> LoadModDataFromPakAsync(string pakPath)
         {
-            using (var pr = new LSLib.LS.PackageReader(pakPath))
+            using (var pr = new PackageReader(pakPath))
             {
                 var pak = pr.Read();
                 var metaFiles = pak.Files.Where(f => f.Name.EndsWith("meta.lsx")).ToList();
