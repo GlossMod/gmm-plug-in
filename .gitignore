@@ -3,3 +3,6 @@ obj
 libs
 .vs
 /sdk
+test
+build
+.vscode
