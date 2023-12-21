@@ -1,0 +1,11 @@
+{
+    "name": "rpf_file",
+    "version": "1.0.0",
+    "description": "rpf_file",
+    "scripts": {
+        "build": "dotnet build -c release",
+        "run": "dotnet run"
+    },
+    "author": "小莫",
+    "license": "ISC"
+}
