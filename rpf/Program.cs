@@ -37,7 +37,7 @@ namespace Rpf
                 case "write":
                     if (args.Length < 4)
                     {
-                        Console.WriteLine("写入操作需要一个输入文件参数。");
+                        Console.WriteLine("写入操作需要一个输入文件参数.");
                         return;
                     }
                     string inputFile = args[3];
@@ -46,25 +46,25 @@ namespace Rpf
                 case "create":
                     if (args.Length < 4)
                     {
-                        Console.WriteLine("创建操作需要一个输出文件参数。");
+                        Console.WriteLine("创建操作需要一个输出文件参数.");
                         return;
                     }
-                    string output = args[3];
-                    string name = args[4];
+                    string output = args[2];
+                    string name = args[3];
                     Create(rpf, output, name);
                     break;
                 default:
-                    Console.WriteLine("未知的命令。");
+                    Console.WriteLine("未知的命令.");
                     break;
             }
         }
 
         static void Read(string rpf, string filename)
         {
-            byte[] data = RpfHandler.ReadData(rpf, filename);
+            var data = RpfHandler.ReadData(rpf, filename);
             // 转换为字符串并打印
-            string text = System.Text.Encoding.Default.GetString(data);
-            System.Console.WriteLine(text);
+            // string text = System.Text.Encoding.Default.GetString(data);
+            System.Console.WriteLine(data);
         }
 
         static void Write(string rpf, string filename, string inputFile)

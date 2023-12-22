@@ -9,6 +9,8 @@ using RageLib.GTA5.Archives;
 using RageLib.GTA5.ArchiveWrappers;
 using RageLib.GTA5.Cryptography;
 using RageLib.GTA5.Resources.PC;
+using System.Text;
+using RageLib.GTA5.Utilities;
 
 class RpfHandler
 {
@@ -17,7 +19,7 @@ class RpfHandler
     /// </summary>
     /// <param name="rpfFile">rpf文件路径</param>
     /// <param name="file">rpf文件内部文件路径</param>
-    public static byte[] ReadData(string rpfFile, string file)
+    public static string ReadData(string rpfFile, string file)
     {
         var rpf = RageArchiveWrapper7.Open(rpfFile);
 
@@ -25,7 +27,7 @@ class RpfHandler
         string directoryName = Path.GetDirectoryName(file);
         string fileName = Path.GetFileName(file);
 
-        byte[] buf = null;
+        string buf = null;
 
         IArchiveFile AFile;
         if (directoryName == "")
@@ -34,7 +36,6 @@ class RpfHandler
         }
         else
         {
-            System.Console.WriteLine(directoryName);
             IArchiveDirectory directory = GetListDirectory(rpf.Root, directoryName);
             AFile = directory.GetFile(fileName);
         }
@@ -43,37 +44,28 @@ class RpfHandler
         {
             if (AFile is IArchiveBinaryFile binFile)
             {
-                var ms = new MemoryStream();
-                binFile.Export(ms);
-                buf = new byte[ms.Length];
-                ms.Position = 0;
-                ms.Read(buf, 0, buf.Length);
+                byte[] data = GetBinaryFileData(binFile, rpf.archive_.Encryption);
 
-                if (binFile.IsEncrypted)
+                if (fileName.EndsWith(".xml") || fileName.EndsWith(".meta"))
                 {
-                    var qq = GTA5Hash.CalculateHash(binFile.Name);
-                    var gg = (qq + (uint)binFile.UncompressedSize + (101 - 40)) % 0x65;
-                    // TODO: if archive encrypted with AES, use AES key...
-                    buf = GTA5Crypto.Decrypt(buf, GTA5Constants.PC_NG_KEYS[gg]);
+                    string xml;
+                    if (data[0] == 0xEF && data[1] == 0xBB && data[2] == 0xBF)  // Detect BOM
+                    {
+                        xml = Encoding.UTF8.GetString(data, 3, data.Length - 3);
+                    }
+                    else
+                    {
+                        xml = Encoding.UTF8.GetString(data);
+                    }
+
+                    buf = xml;
                 }
-                if (binFile.IsCompressed)
+                else
                 {
-                    var def = new DeflateStream(new MemoryStream(buf), CompressionMode.Decompress);
-                    var bufnew = new byte[binFile.UncompressedSize];
-                    def.Read(bufnew, 0, (int)binFile.UncompressedSize);
-                    buf = bufnew;
+                    buf = System.Text.Encoding.Default.GetString(data);
                 }
             }
-            else
-            {
-                var ms = new MemoryStream();
-                AFile.Export(ms);
-                ms.Position = 0;
 
-                buf = new byte[ms.Length];
-                ms.Position = 0;
-                ms.Read(buf, 0, buf.Length);
-            }
         }
         else
         {
@@ -94,10 +86,9 @@ class RpfHandler
     {
         // 1. 打开rpf 文件
         RageArchiveWrapper7 rpf = RageArchiveWrapper7.Open(rpfFile);
-        System.Console.WriteLine(rpf.FileName);
 
         // 获取导入文件的目录和名称
-        var folder = Path.GetDirectoryName(inputPath);
+        string folder = Path.GetDirectoryName(inputPath);
         string name = Path.GetFileName(inputPath);
 
         IArchiveDirectory directory;
@@ -112,7 +103,6 @@ class RpfHandler
             directory = GetListDirectory(rpf.Root, folder);
         }
 
-        System.Console.WriteLine($"directory.Name:{directory.Name}");
 
         var oldFile = directory.GetFile(name);
 
@@ -166,6 +156,8 @@ class RpfHandler
             binFile.Name = name;
             binFile.Import(file);
         }
+
+
         rpf.Flush();
         rpf.Dispose();
     }
@@ -182,7 +174,7 @@ class RpfHandler
         // 这个方法来自 https://github.com/gizzdev/gtautil/blob/master/gtautil/Program/CreateArchive.cs
         // this function by https://github.com/gizzdev/gtautil/blob/master/gtautil/Program/CreateArchive.cs
 
-        string rpfPath = $@"{output}\{name}rpf";
+        string rpfPath = $@"{output}\{name}.rpf";
         using (RageArchiveWrapper7 rpf = RageArchiveWrapper7.Create(rpfPath))
         {
             var queue = new List<Tuple<string, IArchiveDirectory, RageArchiveWrapper7>>() {
@@ -204,7 +196,6 @@ class RpfHandler
                 if (rpfs.IndexOf(currRpf) == -1)
                     rpfs.Add(currRpf);
 
-                Console.WriteLine(folder);
 
                 queue.RemoveAt(0);
 
@@ -248,7 +239,7 @@ class RpfHandler
 
                 if (folders.Length + files.Length == 0)
                 {
-                    Console.WriteLine("  .\\.empty");
+                    // Console.WriteLine("  .\\.empty");
                     var binFile = curr.CreateBinaryFile();
                     binFile.Name = ".empty";
 
@@ -274,7 +265,7 @@ class RpfHandler
 
                         if (file.EndsWith(type.Extension))
                         {
-                            Console.WriteLine("  " + file);
+                            // Console.WriteLine("  " + file);
 
                             if (type == ResourceFileTypes_GTA5_pc.Meta)
                             {
@@ -314,7 +305,7 @@ class RpfHandler
 
                     if (!isResource)
                     {
-                        Console.WriteLine("  " + file);
+                        // Console.WriteLine("  " + file);
                         var binFile = curr.CreateBinaryFile();
                         binFile.Name = fileInfo.Name;
                         binFile.Import(file);
@@ -364,7 +355,7 @@ class RpfHandler
     static IArchiveDirectory GetListDirectory(IArchiveDirectory Root, string directoryName)
     {
         IArchiveDirectory directory;
-        System.Console.WriteLine(directoryName);
+        // System.Console.WriteLine(directoryName);
         //  分割路径 为 数组
         string[] directorys = directoryName.Split(Path.DirectorySeparatorChar);
 
@@ -400,5 +391,42 @@ class RpfHandler
 
         return directory;
     }
+
+    public static byte[] GetBinaryFileData(IArchiveBinaryFile file, RageArchiveEncryption7 encryption)
+    {
+        using (var ms = new MemoryStream())
+        {
+            file.Export(ms);
+
+            byte[] data = ms.ToArray();
+
+            if (file.IsEncrypted)
+            {
+                if (encryption == RageArchiveEncryption7.AES)
+                {
+                    data = GTA5Crypto.DecryptAES(data);
+                }
+                else // if(encryption == RageArchiveEncryption7.NG)
+                {
+                    data = GTA5Crypto.DecryptNG(data, file.Name, (uint)file.UncompressedSize);
+                }
+            }
+
+            if (file.IsCompressed)
+            {
+                using (var dfls = new DeflateStream(new MemoryStream(data), CompressionMode.Decompress))
+                {
+                    using (var outstr = new MemoryStream())
+                    {
+                        dfls.CopyTo(outstr);
+                        data = outstr.ToArray();
+                    }
+                }
+            }
+
+            return data;
+        }
+    }
+
 
 }
