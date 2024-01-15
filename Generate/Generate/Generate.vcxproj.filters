@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="keyboard.cpp" />
+    <ClCompile Include="script.cpp" />
+    <ClCompile Include="scriptmenu.cpp" />
+    <ClCompile Include="inc\natives2.cpp" />
+    <ClCompile Include="Vehicle.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Config</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="script.h" />
+    <ClInclude Include="keyboard.h" />
+    <ClInclude Include="scriptmenu.h" />
+    <ClInclude Include="scriptinfo.h" />
+    <ClInclude Include="inc\enums.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\main.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\nativeCaller.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\natives.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\types.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\natives2.h" />
+    <ClInclude Include="Vehicle.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{fe82bd4a-2d14-486a-8be5-8bf6b50a2414}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="model">
+      <UniqueIdentifier>{a6882697-0ac6-40dd-92c5-793f0e1a74c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{3411f801-1bac-46d8-98b7-803d23575f39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{2efc169a-51aa-4901-a55a-ba653a0ac1e9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
